@@ -1,0 +1,150 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+
+            <!-- Creates top toolbar with New and Delete buttons -->
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2"
+                            (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <!-- Creates table of accounts and pagination -->
+            <p-table #dt [value]="accounts" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['cardnumber','username']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]"
+                [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [rowHover]="true"
+                dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <!-- Table header -->
+                        <h3 class="m-0">Manage Accounts</h3>
+                        <!-- Search bar for filtering -->
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."
+                                class="w-full sm:w-auto" />
+                        </span>
+                    </div>
+                </ng-template>
+                <!-- Creates table column headers -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="id">Card Number <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="code">Username <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="maxUsages">Balance <p-sortIcon field="maxUsages"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <!-- Actual data rows -->
+                <ng-template pTemplate="body" let-account>
+                    <tr>
+                        <td style="width:14%; min-width:20rem;">
+                            <span class="p-column-title">Card Number</span>
+                            {{account.cardnumber}}
+                        </td>
+                        <td style="width:14%; min-width:20rem;">
+                            <span class="p-column-title">Username</span>
+                            {{account.username}}
+                        </td>
+                        <td style="width:14%; min-width:20rem;">
+                            <span class="p-column-title">Balance</span>
+                            {{account.balance | currency: 'EGP'}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                                    (click)="deleteAccount(account)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Shows account dialog for add or update account -->
+        <p-dialog [(visible)]="newAccountDialog" [style]="{width: '450px'}" header="Account Details" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <!-- Card Number field -->
+                <div class="field">
+                    <label for="name">Card Number</label>
+                    <p-inputNumber id="name" inputId="withoutgrouping" [useGrouping]="false"
+                        [(ngModel)]="account.cardnumber">
+                    </p-inputNumber>
+                </div>
+
+                <!-- Username field -->
+                <div>
+                    <label for="username">Username</label>
+                    <input type="text" pInputText id="username" [(ngModel)]="account.username" />
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && account.username === undefined">Username is required.</small>
+                </div>
+                <!-- Password field -->
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" pInputText id="password" [(ngModel)]="account.password">
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && account.password== undefined">Password is required.</small>
+                </div>
+            </ng-template>
+            <!-- Cancel and Save buttons -->
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                    (click)="hideDialogs()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text"
+                    (click)="saveAccount()"></button>
+            </ng-template>
+        </p-dialog>
+
+        <p-dialog header="Transaction" [(visible)]="transactionDialog" [modal]="true" [closable]="true" width="70%">
+            <div class="table-container">
+                <table class="user-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Card Number</th>
+                            <th>Amount</th>
+                            <th>Type</th>
+                            <th>Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let transaction of transactions">
+                            <td>{{
+                                transaction.id
+                                }}</td>
+                            <td>{{transaction.cardnumber}}</td>
+                            <td>{{transaction.amount}}</td>
+                            <td>{{transaction.type}}</td>
+                            <td>{{transaction.timestamp | date:'dd/MM/yyyy'}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple label="Close" icon="pi pi-times" class="p-button-text"
+                        (click)="hideDialogs()"></button>
+                </ng-template>
+            </div>
+        </p-dialog>
+
+        <!-- Delete Confirmation page for one account -->
+        <p-dialog [(visible)]="deleteAccountDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="account">Are you sure you want to delete <b>{{account.cardnumber}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteAccountDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDelete(account)"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

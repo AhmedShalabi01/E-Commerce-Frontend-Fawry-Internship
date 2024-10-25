@@ -1,0 +1,8 @@
+/* @import "bootstrap/scss/bootstrap.scss"
+@import "bootstrap-icons/font/bootstrap-icons.css" */
+
+form div {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    align-content: center;
+}

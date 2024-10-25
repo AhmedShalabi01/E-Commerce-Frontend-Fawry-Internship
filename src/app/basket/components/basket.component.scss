@@ -1,0 +1,79 @@
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.loader {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid CornflowerBlue;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.top-bar {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #dee2e6;
+  padding: 10px 0;
+  text-align: center;
+  font-size: 25px;
+  font-weight: bold;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  z-index: 1000;
+}
+
+
+.floating-parent {
+  position: fixed;
+  bottom: 8%;
+  right: 18px;
+  text-align: center;
+  color: #22C55E;
+  z-index: 1000;
+  width: 320px;
+}
+
+.custom-button .icon-container .label {
+  display: none;
+  margin-left: 8px;
+}
+
+.custom-button .icon-container .custom-icon {
+  font-size: 24px;
+}
+
+.custom-button:hover .icon-container .label {
+  display: inline;
+}
+
+/* Target the increment and decrement buttons within the p-inputNumber component */
+:host ::ng-deep .p-inputnumber .p-button {
+  width: 4rem; /* Set the desired width */
+  height: 2rem; /* Set the desired height */
+  font-size: 1rem; /* Adjust the font size if needed */
+  line-height: 1rem; /* Match line height with button height */
+}
+
+:host ::ng-deep .p-inputnumber input {
+  width: 4rem; /* Set the desired width for the input field */
+  height: 2.5rem; /* Set the desired height if needed */
+  font-size: 1rem; /* Adjust the font size if needed */
+  line-height: 1rem; /* Match line height with the input field height */
+}

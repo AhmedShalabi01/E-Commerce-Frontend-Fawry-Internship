@@ -1,0 +1,34 @@
+<div class="flex justify-content-center">
+    <form #form="ngForm">
+        <div class="col-12 md:col-13">
+            <div class="card p-fluid">
+                <div class="card">
+                    <h1>Warehouse Details</h1>
+                    <div class="formgroup">
+                        <div class="field">
+                            <label class="form-label" for="name">Name</label>
+                            <input pInputText id="name" aria-describedby="name" placeholder="Name" name="name"
+                                [(ngModel)]="name" [required]="true" />
+                        </div>
+                        <div class="field">
+                            <label class="form-label" for="location">Location</label>
+                            <input pInputText id="location" aria-describedby="location" placeholder="Location"
+                                name="location" [(ngModel)]="location" [required]="true" />
+                        </div>
+                        <div class="field">
+                            <label class="form-label" for="address">Address</label>
+                            <input pInputText id="address" aria-describedby="address" placeholder="Address"
+                                name="address" [(ngModel)]="address" [required]="true" />
+                        </div>
+                        <div class="button">
+                            <button pButton *ngIf="!checkRoute()" type="submit" label="Save"
+                                (click)="saveWarehouse()"></button>
+                            <button pButton *ngIf="checkRoute()" type="submit" label="Update"
+                                (click)="updateWarehouse()"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

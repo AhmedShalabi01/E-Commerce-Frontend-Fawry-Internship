@@ -1,0 +1,55 @@
+<div class="container mt-5 mb-5">
+
+    <div class="row">
+        <div class="d-flex justify-content-between ">
+            <h2>Warehouse Products</h2>
+            <button class="btn btn-primary" routerLink="/store/warehouses/{{warehouse_id}}/products/stock"><fa-icon [icon]="faAdd"></fa-icon> Stock </button>
+       </div>
+    </div>
+
+    <div class="row d-flex justify-content-center">
+        <div class="input-group mt-5">
+            <input type="text" class="p-inputtext-medium" pInputText name="text" [(ngModel)]="text" placeholder="Search"  (ngModelChange)="getSearchedProducts()" style="width: 100%;" />
+        </div>
+        <div id="datatable">
+        </div>
+    </div>
+    <hr>
+
+    <div class="container mb-5 mt-4">
+        <p-table [value]="inventories" selectionMode="single" dataKey="code" 
+        [paginator]="true"
+        [rows]="5"
+        currentPageReportTemplate="Showing {first} to {last} "
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <tr>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+                        <th pSortableColumn="categoryName">Category <p-sortIcon field="categoryName"></p-sortIcon></th>
+                        <th pSortableColumn="productQuantity">Qunatity <p-sortIcon field="productQuantity"></p-sortIcon></th>
+                        <th pSortableColumn="date">CreatedAt <p-sortIcon field="date"></p-sortIcon></th>
+                    </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-invetory>
+                <tr>
+                    <td>{{invetory.product.id}}</td>
+                    <td>{{invetory.product.name}}</td>
+                    <td>{{invetory.product.price}}</td>
+                    <td>{{invetory.product.categoryName}}</td>
+                    <td>{{invetory.productQuantity}}</td>
+                    <td>{{invetory.date}}</td>
+                </tr>
+
+                <tr>
+                    <td *ngIf="inventories.length == 0" colspan="6">No Products Found</td>
+                </tr>
+            </ng-template>
+
+
+        </p-table>
+    </div>
+</div>
+

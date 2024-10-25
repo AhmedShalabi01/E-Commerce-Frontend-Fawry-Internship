@@ -1,0 +1,41 @@
+<div class="container">
+    <div class="card-header">{{'Welcome '+loggeduser}}</div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-2">Filter by:</div>
+            <div class="col-md-4">
+                <input type="text" pInputText [(ngModel)]='filter' />
+            </div>
+            <div class="col-md-4">
+                <button pButton label="Add User" (click)="addUser()">
+                </button>
+            </div>
+            <div class="col-12" >
+                <button pButton pRipple label="Sign Out" icon="pi pi-plus" class="p-button-danger mr-2"
+                    (click)="signOut()"></button>
+            </div>
+            <div class="card">
+                <p-table [value]="filterdUser" [tableStyle]="{'min-width': '50rem'}">
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th>Name </th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-filterdUser let-columns="columns">
+                        <tr>
+                            <td>{{filterdUser.username}}</td>
+                            <td>
+                                <div *ngIf="filterdUser.enabled===1" style="color: green;">Active</div>
+                            </td>
+                            <td>
+                                <p-button *ngIf="filterdUser.enabled===1" severity="danger" label="Deactivate"
+                                    (click)="deactivate(filterdUser.username)"></p-button>
+                                <p-button *ngIf="filterdUser.enabled!==1" severity="success" label="Activate"
+                                    (click)="activate(filterdUser.username)"></p-button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>

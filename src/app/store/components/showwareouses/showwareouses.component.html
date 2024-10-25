@@ -1,0 +1,48 @@
+<div class="container mt-5 mb-5">
+      
+    <div class="d-flex justify-content-between ">
+        <h2>warehouses</h2>
+        <button class="btn btn-primary" routerLink="/store/warehouses/create"><fa-icon [icon]="faAdd"></fa-icon> Add warehouse</button>
+   </div>
+       <hr> 
+       <div class="container mb-5 mt-4">
+        <p-table [value]="warehouses" selectionMode="single" dataKey="code" 
+        [paginator]="true"
+        [rows]="5"
+        currentPageReportTemplate="Showing {first} to {last} "
+        >
+            <ng-template pTemplate="header">
+                <tr>
+                    <tr>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="name">Name <p-sortIcon field="name"></p-sortIcon></th>
+                        <th pSortableColumn="location" >Location <p-sortIcon field="location"></p-sortIcon></th>
+                        <th pSortableColumn="address">Address <p-sortIcon field="address"></p-sortIcon></th>
+                        <th pSortableColumn="date">CreatedAt <p-sortIcon field="date"></p-sortIcon></th>
+                        <th pSortableColumn="Options">Options <p-sortIcon field="id"></p-sortIcon></th>
+                    </tr>
+                    <tr>
+                        <td *ngIf="warehouses.length == 0" colspan="6">No Warehouses Found</td>
+                    </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-warehouse>
+                <tr>
+                    <th scope="row">{{warehouse.id}}</th>
+                    <td>{{warehouse.name}}</td>
+                    <td>{{warehouse.location}}</td>
+                    <td>{{warehouse.address}}</td>
+                    <td>{{warehouse.date}}</td>
+                    <td>
+                        <a href="#" [routerLink]="['/store/warehouses/edit' , warehouse.id]" class="text-secondary"><fa-icon [icon]="faPen"></fa-icon></a>
+                        <a href="#" routerLink="/store" class="text-danger"><fa-icon [icon]="faTrash" (click)="deleteWarehouse(warehouse.id)" ></fa-icon></a>
+                        <a href="#" routerLink="/store/warehouses/{{warehouse.id}}/products" class="text-primary"><fa-icon [icon]="faCubes" ></fa-icon></a>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    
+</div>
+
+  
+  

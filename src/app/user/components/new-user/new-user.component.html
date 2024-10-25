@@ -1,0 +1,22 @@
+<div class="col-12 md:col-12 flex justify-content-center">
+    <form>
+        <p-card header="Add New User">
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="text" pInputText formControlName="email" class="w-full" name="email"
+                    placeholder="Type User email" (keyup)="onUsername($event)" />
+            </div>
+            <div class="field">
+                <label for="User Role">Role</label>
+                <input type="text" pInputText class="w-full" name="password" placeholder="Type User Role"
+                    (keyup)="onRole($event)" />
+            </div>
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" pInputText formControlName="password" class="w-full" name="password"
+                    placeholder="Type User password" (keyup)="onPassword($event)" />
+            </div>
+            <p-button label="Add User" styleClass="w-full" type="submit" (click)="onClick()"></p-button>
+        </p-card>
+    </form>
+</div>

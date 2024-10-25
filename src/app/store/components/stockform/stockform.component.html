@@ -1,0 +1,31 @@
+<a *ngIf="!checkRoute()" (click)="open(mymodal)"><fa-icon icon="cubes" class="text-primary"></fa-icon> Stock</a>
+
+<ng-template #mymodal let-modal>
+
+    <div class="modal-header">
+
+        <h4 class="modal-title" id="modal-basic-title">Stock Product</h4>
+
+        <a type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+            <fa-icon icon="close" style="color: black;"></fa-icon>
+        </a>
+    </div>
+
+
+    <div class="container">
+        <div class="modal-body">
+            <form ngForm>
+                <div class="d-flex flex-column gap-2">
+                    <label class="form-label" for="quantity">Quantity</label>
+                    <p-inputNumber id="quantity" placeholder="Enter quantity" name="quantity" [(ngModel)]="quantity"
+                        [required]="true" mode="decimal" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal-footer">
+
+        <button type="button" class="btn btn-outline-primary" (click)="submit(modal)">stock</button>
+
+    </div>
+</ng-template>

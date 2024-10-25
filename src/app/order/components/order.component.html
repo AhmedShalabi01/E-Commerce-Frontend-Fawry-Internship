@@ -1,0 +1,44 @@
+<p-toast></p-toast>
+<div class="flex justify-content-center align-items-center">
+    <form (ngSubmit)="confirmOrder()">
+        <div class="grid">
+            <div class="col-12 md:col-12">
+                <div class="card p-fluid">
+                    <div class="card">
+                        <h1>Order Confirmation</h1>
+                        <h2>Total Cost: L.E. {{totalCost}}</h2>
+                        <div class="formgroup">
+                            <div class="field">
+                                <label htmlFor="email" class="p-sr-only">email</label>
+                                <input pInputText [(ngModel)]="email" name="email" id="email" type="email"
+                                    placeholder="email@example.com" required />
+                            </div>
+                            <div>
+                                <div class="flex justify-content-between">
+                                    <div class="field" style="margin-right: 15px;">
+                                        <label htmlFor="cardNumber" class="p-sr-only">cardNumber</label>
+                                        <p-inputNumber placeholder="Card Number" [(ngModel)]="cardNumber" name="cardNumber" id="cardNumber" [required]="true"
+                                        inputId="withoutgrouping" [useGrouping]="false"/>
+                                    </div>
+                                    <div class="field" style="padding-right: 3px;">
+                                        <label htmlFor="coupon" class="p-sr-only">coupon</label>
+                                        <input pInputText [(ngModel)]="coupon" name="coupon" id="coupon" type="text"
+                                            placeholder="coupon" />
+                                    </div>
+                                    <div>
+                                        <p-button label="Apply" [loading]="loading" (onClick)="applyCoupon()"></p-button>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="field">
+                                <button pButton type="submit" label="Submit"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

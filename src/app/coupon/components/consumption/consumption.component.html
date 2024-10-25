@@ -1,0 +1,108 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+
+            <!-- Creates top toolbar with New and Delete buttons -->
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger"
+                            (click)="deleteSelectedConsumptions()"
+                            [disabled]="!selectedConsumptions || !selectedConsumptions.length"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <!-- Creates table of consumptions and pagination -->
+            <p-table #dt [value]="consumptions" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['id','couponCode','orderId','timestamp']" [paginator]="true"
+                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedConsumptions" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <!-- Table header -->
+                        <h3 class="m-0">Consumption History</h3>
+                        <!-- Search bar for filtering -->
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."
+                                class="w-full sm:w-auto" />
+                        </span>
+                    </div>
+                </ng-template>
+                <!-- Creates table column headers -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="couponCode">Coupon Code <p-sortIcon field="couponCode"></p-sortIcon></th>
+                        <th pSortableColumn="orderId">Order ID <p-sortIcon field="orderId"></p-sortIcon></th>
+                        <th pSortableColumn="timestamp">Timestamp <p-sortIcon field="timestamp"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <!-- Actual data rows -->
+                <ng-template pTemplate="body" let-consumption>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="consumption"></p-tableCheckbox>
+                        </td>
+                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">ID</span>
+                            {{consumption.id}}
+                        </td>
+                        <td style="width:14%; min-width:15rem;">
+                            <span class="p-column-title">Coupon Code</span>
+                            {{consumption.couponCode}}
+                        </td>
+                        <td style="width:14%; min-width:15rem;">
+                            <span class="p-column-title">Order ID</span>
+                            {{consumption.orderId}}
+                        </td>
+                        <td style="width:14%; min-width:25rem;">
+                            <span class="p-column-title">Timestamp</span>
+                            {{consumption.timestamp | date: 'yyyy-MM-dd HH:mm:ss'}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                                    (click)="deleteConsumption(consumption)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Delete Confirmation page for one consumption -->
+        <p-dialog [(visible)]="deleteConsumptionDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="consumption">Are you sure you want to delete this consumption record ?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteConsumptionDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDelete(consumption)"></button>
+            </ng-template>
+        </p-dialog>
+
+        <!-- Delete Confirmation page for multiple consumptions -->
+        <p-dialog [(visible)]="deleteConsumptionsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete selected consumptions?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteConsumptionsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

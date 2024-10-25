@@ -1,0 +1,193 @@
+<div class="grid">
+    <div class="col-12">
+        <div class="card px-6 py-6">
+            <p-toast></p-toast>
+
+            <!-- Creates top toolbar with New and Delete buttons -->
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="New" icon="pi pi-plus" class="p-button-success mr-2"
+                            (click)="openNew()"></button>
+                        <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger"
+                            (click)="deleteSelectedCoupons()"
+                            [disabled]="!selectedCoupons || !selectedCoupons.length"></button>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="right">
+                    <div class="my-2">
+                        <button pButton pRipple label="Consumption History" icon="pi pi-plus" class="p-button-warning mr-2"
+                            (click)="showConsumptionHistory()"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
+            <!-- Creates table of coupons and pagination -->
+            <p-table #dt [value]="coupons" [columns]="cols" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['id','code','maxUsages','type', 'discount', 'expiryDate']" [paginator]="true"
+                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedCoupons" selectionMode="multiple" [rowHover]="true" dataKey="id">
+                <ng-template pTemplate="caption">
+                    <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                        <!-- Table header -->
+                        <h3 class="m-0">Manage Coupons</h3>
+                        <!-- Search bar for filtering -->
+                        <span class="block mt-2 md:mt-0 p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."
+                                class="w-full sm:w-auto" />
+                        </span>
+                    </div>
+                </ng-template>
+                <!-- Creates table column headers -->
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+                        <th pSortableColumn="code">Code <p-sortIcon field="code"></p-sortIcon></th>
+                        <th pSortableColumn="maxUsages">Maximum Usages <p-sortIcon field="maxUsages"></p-sortIcon></th>
+                        <th pSortableColumn="type">Type <p-sortIcon field="type"></p-sortIcon></th>
+                        <th pSortableColumn="discount">Discount <p-sortIcon field="discount"></p-sortIcon></th>
+                        <th pSortableColumn="expiryDate">Expiry Date <p-sortIcon field="expiryDate"></p-sortIcon></th>
+                        <th></th>
+                    </tr>
+                </ng-template>
+                <!-- Actual data rows -->
+                <ng-template pTemplate="body" let-coupon>
+                    <tr>
+                        <td>
+                            <p-tableCheckbox [value]="coupon"></p-tableCheckbox>
+                        </td>
+                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">ID</span>
+                            {{coupon.id}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Code</span>
+                            {{coupon.code}}
+                        </td>
+                        <td style="width:14%; min-width:15rem;">
+                            <span class="p-column-title">Maximum Usages</span>
+                            {{coupon.maxUsages}}
+                        </td>
+                        <td style="width:14%; min-width: 10rem;"><span class="p-column-title">Type</span>
+                            <span
+                                [class]="'coupon-badge status-' + (coupon.type ? coupon.type.toLowerCase() : '')">{{coupon.type}}</span>
+                        </td>
+                        <td style="width:14%; min-width:8rem;">
+                            <span class="p-column-title">Discount</span>
+                            <ng-container *ngIf="coupon.type === 'FIXED'; else percentageDiscount">
+                                {{coupon.discount | currency:'USD'}}
+                            </ng-container>
+                            <ng-template #percentageDiscount>
+                                {{coupon.discount}}%
+                            </ng-template>
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Expiry Date</span>
+                            {{coupon.expiryDate}}
+                        </td>
+                        <td>
+                            <div class="flex">
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="editCoupon(coupon)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger"
+                                    (click)="deleteCoupon(coupon)"></button>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+
+        <!-- Shows coupon dialog for add or update coupon -->
+        <p-dialog [(visible)]="couponDialog" [style]="{width: '450px'}" header="Coupon Details" [modal]="true"
+            class="p-fluid">
+            <ng-template pTemplate="content">
+                <!-- Coupon Code field -->
+                <div class="field">
+                    <label for="name">Code</label>
+                    <input type="text" pInputText id="code" [(ngModel)]="coupon.code" required autofocus />
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && coupon.code === undefined">Code is required.</small>
+                </div>
+                <!-- Maximum Usages field -->
+                <div class="field">
+                    <label for="maxUsages">Maximum Usages</label>
+                    <p-inputNumber [(ngModel)]="coupon.maxUsages" inputId="minmax" mode="decimal" [min]="0" [max]="100">
+                    </p-inputNumber>
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && coupon.maxUsages === undefined">Maximum usages are required.</small>
+                </div>
+                <!-- Type field -->
+                <div class="field">
+                    <label for="type">Type</label>
+                    <p-dropdown [(ngModel)]="coupon.type" inputId="type" [dataKey]="coupon.type" optionValue="value"
+                        [options]="couponTypes" placeholder="Select"></p-dropdown>
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && coupon.type === undefined">Coupon type is required.</small>
+                </div>
+                <!-- Discount field -->
+                <div class="field">
+                    <label for="discount">Discount</label>
+                    <ng-container *ngIf="coupon.type === 'fixed'; else percentageMode">
+                        <p-inputNumber id="discount" [(ngModel)]="coupon.discount" mode="currency" currency="USD"
+                            locale="en-US"></p-inputNumber>
+                    </ng-container>
+                    <ng-template #percentageMode>
+                        <p-inputNumber id="discount" [(ngModel)]="coupon.discount" mode="decimal" [suffix]="'%'"
+                            [min]="1" [max]="100" [step]="1" [minFractionDigits]="0" [maxFractionDigits]="2">
+                        </p-inputNumber>
+                    </ng-template>
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && coupon.discount === undefined">Discount is required.</small>
+                </div>
+                <!-- Expiry Date field -->
+                <div class="field">
+                    <label for="expiryDate">Expiry Date</label>
+                    <p-calendar [(ngModel)]="coupon.expiryDate" dateFormat="yy-mm-dd"></p-calendar>
+                    <small class="ng-dirty ng-invalid" style="color: red;"
+                        *ngIf="submitted && coupon.expiryDate === undefined">Expiry date is required.</small>
+                </div>
+            </ng-template>
+            <!-- Cancel and Save buttons -->
+            <ng-template pTemplate="footer">
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                    (click)="hideDialogs()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveCoupon()"
+                    *ngIf="!coupon.id || (coupon.id && coupon.type)"></button>
+            </ng-template>
+        </p-dialog>
+
+        <!-- Delete Confirmation page for one coupon -->
+        <p-dialog [(visible)]="deleteCouponDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span *ngIf="coupon">Are you sure you want to delete <b>{{coupon.code}}</b>?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteCouponDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDelete(coupon)"></button>
+            </ng-template>
+        </p-dialog>
+
+        <!-- Delete Confirmation page for multiple coupons -->
+        <p-dialog [(visible)]="deleteCouponsDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+            <div class="flex align-items-center justify-content-center">
+                <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                <span>Are you sure you want to delete selected coupons?</span>
+            </div>
+            <ng-template pTemplate="footer">
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteCouponsDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                    (click)="confirmDeleteSelected()"></button>
+            </ng-template>
+        </p-dialog>
+    </div>
+</div>

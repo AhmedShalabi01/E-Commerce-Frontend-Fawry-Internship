@@ -1,0 +1,134 @@
+<div *ngIf="isLoading">
+    <div class="loader-container">
+        <div class="loader">
+        </div>
+    </div>
+</div>
+<div *ngIf="!isLoading">
+    <div class="floating-parent">
+        <div class="my-2">
+            <button pButton pRipple class="custom-button p-button-warning mr-2"
+                style="border-radius: 20px; font-size: 22px;" (click)="placeOrder()" routerLink="test">
+                <span class="icon-container">
+                    <i class="pi pi-arrow-circle-right custom-icon"></i>
+                    <span class="label">Place Order</span>
+                </span>
+            </button>
+        </div>
+    </div>
+    <div class="grid">
+        <div class="col-12">
+            <div class="card px-6 py-6">
+                <p-toast></p-toast>
+                <p-toolbar styleClass="mb-4">
+                    <ng-template pTemplate="left">
+                        <div class="my-2" style="display: flex; align-items: center;">
+                            <button pButton pRipple label="Delete" icon="pi pi-trash" class="p-button-danger"
+                                (click)="deleteSelectedOrders()"
+                                [disabled]="!selectedItems || !selectedItems.length"></button>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="right">
+                        <div class="my-2" style="display: flex; align-items: center;">
+                            <h2>Total Cost: {{totalCost}} EGP</h2>
+                        </div>
+                    </ng-template>
+                </p-toolbar>
+                <p-table #dt [value]="basket" [columns]="cols" responsiveLayout="scroll"
+                    [globalFilterFields]="['id','name','price']" [(selection)]="selectedItems" selectionMode="multiple"
+                    [rowHover]="true" dataKey="id">
+                    <ng-template pTemplate="caption">
+                        <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
+                            <h5 class="m-0" style="font-size: 25px;">Order Basket</h5>
+                            <span class="block mt-2 md:mt-0 p-input-icon-left">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" (input)="onGlobalFilter(dt, $event)"
+                                    placeholder="Search..." class="w-full sm:w-auto" />
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 3rem">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+                            <th pSortableColumn="productId">ID <p-sortIcon field="productId"></p-sortIcon></th>
+                            <th pSortableColumn="productName">Name <p-sortIcon field="productName"></p-sortIcon></th>
+                            <th>Image</th>
+                            <th pSortableColumn="price">Price <p-sortIcon field="price"></p-sortIcon></th>
+                            <th pSortableColumn="categoryName">Category<p-sortIcon field="categoryName"></p-sortIcon>
+                            </th>
+                            <th pSortableColumn="quantity">Quantity</th>
+                            <th></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-order>
+                        <tr>
+                            <td>
+                                <p-tableCheckbox [value]="order"></p-tableCheckbox>
+                            </td>
+                            <td style="width:14%; min-width:10rem;"><span class="p-column-title">Code</span>
+                                {{order.code || order.productId}}
+                            </td>
+                            <td style="width:14%; min-width:10rem;">
+                                <span class="p-column-title">Name</span>
+                                {{order.productName}}
+                            </td>
+                            <td style="width:14%; min-width:10rem;"><span class="p-column-title">Image</span>
+                                <img [src]="order.imageUrl" [alt]="order.productName" width="100" class="shadow-4" />
+                            </td>
+                            <td style="width:14%; min-width:8rem;">
+                                <span class="p-column-title">Price</span>
+                                {{order.price | currency:'E£ '}}
+                            </td>
+                            <td style="width:14%; min-width:10rem;">
+                                <span class="p-column-title">Category</span>
+                                {{order.categoryName}}
+                            </td>
+                            <td style="width:2rem; min-width:2rem">
+                                <span class="p-column-title">Quantity</span>
+                                <p-inputNumber [(ngModel)]=order.quantity [showButtons]="true" buttonLayout="vertical"
+                                    spinnerMode="vertical" inputId="vertical" decrementButtonClass="p-button-secondary"
+                                    incrementButtonClass="p-button-secondary" incrementButtonIcon="pi pi-plus"
+                                    decrementButtonIcon="pi pi-minus" [min]="1" 
+                                    [max]="" 
+                                    (ngModelChange)="onQuantityChange(order)">
+                                </p-inputNumber>
+                            </td>
+                            <td>
+                                <div class="flex">
+                                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"
+                                        (click)="deleteOrder(order)" style="background-color: red;"></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+            <p-dialog [(visible)]="deleteOrderDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+                <div class="flex align-items-center justify-content-center">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                    <span *ngIf="item">Are you sure you want to delete <b>{{item.productName}}</b>?</span>
+                </div>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                        (click)="deleteOrderDialog = false"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                        (click)="confirmDelete()"></button>
+                </ng-template>
+            </p-dialog>
+            <p-dialog [(visible)]="deleteOrdersDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+                <div class="flex align-items-center justify-content-center">
+                    <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
+                    <span>Are you sure you want to delete selected products?</span>
+                </div>
+                <ng-template pTemplate="footer">
+                    <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                        (click)="deleteOrdersDialog = false"></button>
+                    <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes"
+                        (click)="confirmDeleteSelected()"></button>
+                </ng-template>
+            </p-dialog>
+        </div>
+    </div>
+</div>
